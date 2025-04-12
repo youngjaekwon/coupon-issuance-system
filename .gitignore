@@ -111,3 +111,23 @@ fabric.properties
 
 # env file
 .env
+
+# === Build / Generated ===
+gen/
+
+# === IDEs ===
+.idea/
+.vscode/
+*.iml
+
+# === Binaries & Outputs ===
+*.log
+
+# === Profiling / Coverage ===
+*.prof
+*.pb.gz
+*.coverprofile
+
+# === System Files ===
+.DS_Store
+Thumbs.db
