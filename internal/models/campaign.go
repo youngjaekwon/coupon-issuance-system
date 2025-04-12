@@ -14,3 +14,23 @@ type Campaign struct {
 	CreatedAt  time.Time `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt  time.Time `json:"updated_at" gorm:"autoUpdateTime"`
 }
+
+func (c *Campaign) IsValid() bool {
+	if c.ID == uuid.Nil {
+		return false
+	}
+
+	if c.Name == "" {
+		return false
+	}
+
+	if c.TotalCount <= 0 {
+		return false
+	}
+
+	if c.StartAt.IsZero() || c.StartAt.Before(time.Now()) {
+		return false
+	}
+
+	return true
+}

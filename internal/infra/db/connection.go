@@ -43,7 +43,7 @@ func Init() {
 }
 
 func autoMigrate(db *gorm.DB) {
-	if err := db.AutoMigrate(&models.Campaign{}, &models.Coupon{}); err != nil {
+	if err := db.AutoMigrate(models.AllModels()...); err != nil {
 		log.Fatalf("Failed to auto migrate: %v", err)
 	}
 }
