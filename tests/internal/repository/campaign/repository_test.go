@@ -79,3 +79,30 @@ func TestFindByID_NotFound(t *testing.T) {
 	assert.Nil(t, foundCampaign)
 	assert.Equal(t, gorm.ErrRecordNotFound, err)
 }
+
+func TestListCampaigns_Success(t *testing.T) {
+	db := testdb.NewTestDB()
+	repository := repo.New(db)
+
+	campaign1 := newTestCampaign()
+	campaign2 := newTestCampaign()
+	campaign2.Name = "Another Campaign"
+
+	err := repository.Create(context.Background(), campaign1)
+	assert.NoError(t, err)
+	err = repository.Create(context.Background(), campaign2)
+	assert.NoError(t, err)
+
+	campaigns, err := repository.ListCampaigns(context.Background())
+	assert.NoError(t, err)
+	assert.Len(t, campaigns, 2)
+}
+
+func TestListCampaigns_Empty(t *testing.T) {
+	db := testdb.NewTestDB()
+	repository := repo.New(db)
+
+	campaigns, err := repository.ListCampaigns(context.Background())
+	assert.NoError(t, err)
+	assert.Len(t, campaigns, 0)
+}
