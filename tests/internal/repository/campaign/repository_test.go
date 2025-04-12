@@ -93,7 +93,7 @@ func TestListCampaigns_Success(t *testing.T) {
 	err = repository.Create(context.Background(), campaign2)
 	assert.NoError(t, err)
 
-	campaigns, err := repository.ListCampaigns(context.Background())
+	campaigns, err := repository.List(context.Background())
 	assert.NoError(t, err)
 	assert.Len(t, campaigns, 2)
 }
@@ -102,7 +102,7 @@ func TestListCampaigns_Empty(t *testing.T) {
 	db := testdb.NewTestDB()
 	repository := repo.New(db)
 
-	campaigns, err := repository.ListCampaigns(context.Background())
+	campaigns, err := repository.List(context.Background())
 	assert.NoError(t, err)
 	assert.Len(t, campaigns, 0)
 }
