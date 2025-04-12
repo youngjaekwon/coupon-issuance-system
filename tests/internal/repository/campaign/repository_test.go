@@ -93,7 +93,7 @@ func TestListCampaigns_Success(t *testing.T) {
 	err = repository.Create(context.Background(), campaign2)
 	assert.NoError(t, err)
 
-	campaigns, err := repository.List(context.Background())
+	campaigns, err := repository.List(context.Background(), 0, 10)
 	assert.NoError(t, err)
 	assert.Len(t, campaigns, 2)
 }
@@ -102,7 +102,60 @@ func TestListCampaigns_Empty(t *testing.T) {
 	db := testdb.NewTestDB()
 	repository := repo.New(db)
 
-	campaigns, err := repository.List(context.Background())
+	campaigns, err := repository.List(context.Background(), 0, 10)
 	assert.NoError(t, err)
 	assert.Len(t, campaigns, 0)
+}
+
+func TestListCampaigns_Pagination(t *testing.T) {
+	db := testdb.NewTestDB()
+	repository := repo.New(db)
+
+	for i := 0; i < 25; i++ {
+		campaign := newTestCampaign()
+		campaign.Name = "Campaign " + string(i)
+		err := repository.Create(context.Background(), campaign)
+		assert.NoError(t, err)
+	}
+
+	campaigns, err := repository.List(context.Background(), 0, 10)
+	assert.NoError(t, err)
+	assert.Len(t, campaigns, 10)
+
+	campaigns, err = repository.List(context.Background(), 1, 10)
+	assert.NoError(t, err)
+	assert.Len(t, campaigns, 10)
+
+	campaigns, err = repository.List(context.Background(), 2, 10)
+	assert.NoError(t, err)
+	assert.Len(t, campaigns, 5)
+}
+
+func TestListCampaigns_InvalidPage(t *testing.T) {
+	db := testdb.NewTestDB()
+	repository := repo.New(db)
+
+	campaigns, err := repository.List(context.Background(), -1, 10)
+	assert.Error(t, err)
+	assert.Nil(t, campaigns)
+
+	campaigns, err = repository.List(context.Background(), 0, -1)
+	assert.Error(t, err)
+	assert.Nil(t, campaigns)
+}
+
+func TestListCampaigns_NoLimit(t *testing.T) {
+	db := testdb.NewTestDB()
+	repository := repo.New(db)
+
+	for i := 0; i < 25; i++ {
+		campaign := newTestCampaign()
+		campaign.Name = "Campaign " + string(i)
+		err := repository.Create(context.Background(), campaign)
+		assert.NoError(t, err)
+	}
+
+	campaigns, err := repository.List(context.Background(), 0, 0)
+	assert.NoError(t, err)
+	assert.Len(t, campaigns, 25)
 }
