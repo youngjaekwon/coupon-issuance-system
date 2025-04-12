@@ -4,6 +4,7 @@ import (
 	"context"
 	"couponIssuanceSystem/internal/apperrors"
 	repo "couponIssuanceSystem/internal/repository/campaign"
+	svc "couponIssuanceSystem/internal/service/campaign"
 	testdb "couponIssuanceSystem/tests/infra/db"
 	"errors"
 	"github.com/stretchr/testify/assert"
@@ -25,6 +26,8 @@ func TestCreateCampaign_Success(t *testing.T) {
 	campaign, err := service.CreateCampaign(context.Background(), input)
 	assert.NoError(t, err)
 	assert.Equal(t, input.Name, campaign.Name)
+	assert.Equal(t, input.StartAt, campaign.StartAt)
+	assert.Nil(t, campaign.EndAt)
 	assert.Equal(t, input.TotalCount, campaign.TotalCount)
 }
 
