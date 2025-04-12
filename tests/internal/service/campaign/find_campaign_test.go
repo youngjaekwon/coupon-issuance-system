@@ -32,7 +32,7 @@ func TestFindCampaign_Success(t *testing.T) {
 
 	foundCampaign, err := service.FindCampaign(context.Background(), campaignID)
 	assert.NoError(t, err)
-	assert.Equal(t, campaign.ID, foundCampaign.ID)
+	assert.Equal(t, campaign.ID.String(), foundCampaign.ID)
 	assert.Equal(t, campaign.Name, foundCampaign.Name)
 }
 
