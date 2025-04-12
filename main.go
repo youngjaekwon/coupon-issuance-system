@@ -1,14 +1,18 @@
 package main
 
 import (
+	"couponIssuanceSystem/internal/config"
+	"couponIssuanceSystem/internal/infra/db"
 	"couponIssuanceSystem/routes"
 	"log"
 )
 
 func main() {
+	config.Init()
+	db.Init()
 	r := routes.SetupRouter()
 
-	if err := r.Run(":8000"); err != nil {
-		log.Fatalf("서버 실행 중 오류 발생 : %v", err)
+	if err := r.Run(":" + config.AppConfig.Port); err != nil {
+		log.Fatalf("Failed to start server: %v", err)
 	}
 }
