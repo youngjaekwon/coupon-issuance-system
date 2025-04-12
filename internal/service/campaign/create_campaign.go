@@ -6,7 +6,7 @@ import (
 	"couponIssuanceSystem/internal/models"
 )
 
-func (s *service) CreateCampaign(ctx context.Context, input *CreateCampaignInput) (*CreateCampaignOutput, error) {
+func (s *service) CreateCampaign(ctx context.Context, input *CreateCampaignInput) (*CampaignOutput, error) {
 	if !input.IsValid() {
 		return nil, apperrors.ErrInvalidCampaignInput
 	}
@@ -24,7 +24,7 @@ func (s *service) CreateCampaign(ctx context.Context, input *CreateCampaignInput
 		return nil, err
 	}
 
-	return &CreateCampaignOutput{
+	return &CampaignOutput{
 		ID:         campaign.ID.String(),
 		Name:       campaign.Name,
 		TotalCount: campaign.TotalCount,

@@ -6,7 +6,7 @@ import (
 )
 
 type Service interface {
-	CreateCampaign(ctx context.Context, input *CreateCampaignInput) (*CreateCampaignOutput, error)
+	CreateCampaign(ctx context.Context, input *CreateCampaignInput) (*CampaignOutput, error)
 }
 
 type service struct {

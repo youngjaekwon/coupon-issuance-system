@@ -27,7 +27,7 @@ func (c *CreateCampaignInput) IsValid() bool {
 	return true
 }
 
-type CreateCampaignOutput struct {
+type CampaignOutput struct {
 	ID         string     `json:"id"`
 	Name       string     `json:"name"`
 	TotalCount int        `json:"total_count"`
