@@ -9,6 +9,7 @@ import (
 type Service interface {
 	CreateCampaign(ctx context.Context, input *CreateCampaignInput) (*CampaignOutput, error)
 	FindCampaign(ctx context.Context, id uuid.UUID) (*CampaignOutput, error)
+	ListCampaigns(ctx context.Context, page, limit int) ([]*CampaignOutput, error)
 }
 
 type service struct {

@@ -8,6 +8,7 @@ import (
 	svc "couponIssuanceSystem/internal/service/campaign"
 	testdb "couponIssuanceSystem/tests/infra/db"
 	"errors"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"strconv"
 	"testing"
@@ -16,6 +17,7 @@ import (
 
 func createCampaign(repository repo.Repository, name string, totalCount int, startAt time.Time) (*models.Campaign, error) {
 	campaign := &models.Campaign{
+		ID:         uuid.New(),
 		Name:       name,
 		TotalCount: totalCount,
 		StartAt:    startAt,
@@ -39,7 +41,7 @@ func TestListCampaigns_Success(t *testing.T) {
 		campaigns = append(campaigns, campaign)
 	}
 
-	gotCampaigns, err := service.ListCampaigns(context.Background(), 1, 5)
+	gotCampaigns, err := service.ListCampaigns(context.Background(), 0, 5)
 
 	assert.NoError(t, err)
 	assert.Len(t, gotCampaigns, 5)
@@ -55,7 +57,7 @@ func TestListCampaigns_Empty(t *testing.T) {
 	repository := repo.New(db)
 	service := svc.New(repository)
 
-	gotCampaigns, err := service.ListCampaigns(context.Background(), 1, 5)
+	gotCampaigns, err := service.ListCampaigns(context.Background(), 0, 5)
 
 	assert.NoError(t, err)
 	assert.Empty(t, gotCampaigns)
@@ -70,7 +72,7 @@ func TestListCampaigns_InvalidPageOrLimit(t *testing.T) {
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, apperrors.ErrInvalidPage))
 
-	_, err = service.ListCampaigns(context.Background(), 1, -5)
+	_, err = service.ListCampaigns(context.Background(), 0, -5)
 	assert.Error(t, err)
 	assert.True(t, errors.Is(err, apperrors.ErrInvalidPageSize))
 }
@@ -87,15 +89,15 @@ func TestListCampaigns_Pagination(t *testing.T) {
 		}
 	}
 
-	gotCampaigns, err := service.ListCampaigns(context.Background(), 1, 10)
+	gotCampaigns, err := service.ListCampaigns(context.Background(), 0, 10)
+	assert.NoError(t, err)
+	assert.Len(t, gotCampaigns, 10)
+
+	gotCampaigns, err = service.ListCampaigns(context.Background(), 1, 10)
 	assert.NoError(t, err)
 	assert.Len(t, gotCampaigns, 10)
 
 	gotCampaigns, err = service.ListCampaigns(context.Background(), 2, 10)
-	assert.NoError(t, err)
-	assert.Len(t, gotCampaigns, 10)
-
-	gotCampaigns, err = service.ListCampaigns(context.Background(), 3, 10)
 	assert.NoError(t, err)
 	assert.Len(t, gotCampaigns, 5)
 }
