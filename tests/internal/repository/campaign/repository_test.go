@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -113,7 +114,7 @@ func TestListCampaigns_Pagination(t *testing.T) {
 
 	for i := 0; i < 25; i++ {
 		campaign := newTestCampaign()
-		campaign.Name = "Campaign " + string(i)
+		campaign.Name = "Campaign " + strconv.Itoa(i)
 		err := repository.Create(context.Background(), campaign)
 		assert.NoError(t, err)
 	}
@@ -150,7 +151,7 @@ func TestListCampaigns_NoLimit(t *testing.T) {
 
 	for i := 0; i < 25; i++ {
 		campaign := newTestCampaign()
-		campaign.Name = "Campaign " + string(i)
+		campaign.Name = "Campaign " + strconv.Itoa(i)
 		err := repository.Create(context.Background(), campaign)
 		assert.NoError(t, err)
 	}

@@ -3,6 +3,7 @@ package campaign
 import (
 	"context"
 	"couponIssuanceSystem/internal/models"
+	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -26,4 +27,22 @@ func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*models.Campai
 		return nil, err
 	}
 	return &campaign, nil
+}
+
+func (r *repository) List(ctx context.Context, page, limit int) ([]*models.Campaign, error) {
+	if page < 0 || limit < 0 {
+		return nil, fmt.Errorf("invalid pagination: page=%d, limit=%d", page, limit)
+	}
+
+	var campaigns []*models.Campaign
+	var err error
+	if limit == 0 {
+		err = r.db.WithContext(ctx).Find(&campaigns).Error
+	} else {
+		err = r.db.WithContext(ctx).Offset(page * limit).Limit(limit).Find(&campaigns).Error
+	}
+	if err != nil {
+		return nil, err
+	}
+	return campaigns, nil
 }
