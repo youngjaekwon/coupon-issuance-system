@@ -30,3 +30,12 @@ func (r *repository) IsStockPreWarm(ctx context.Context, campaignID string) (boo
 	}
 	return val != "", nil
 }
+
+func (r *repository) DecrementStock(ctx context.Context, campaignID string) (int64, error) {
+	key := StockKey(campaignID)
+	val, err := r.redisClient.Decr(ctx, key).Result()
+	if err != nil {
+		return 0, err
+	}
+	return val, nil
+}
