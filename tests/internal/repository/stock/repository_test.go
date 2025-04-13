@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestPrewarmStock_Success(t *testing.T) {
+func TestPreWarmStock_Success(t *testing.T) {
 	ctx := context.Background()
 	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
 	defer mr.Close()
@@ -18,7 +18,7 @@ func TestPrewarmStock_Success(t *testing.T) {
 	campaignID := "test-campaign-id"
 	totalCount := 100
 
-	err := repository.PrewarmStock(ctx, campaignID, totalCount)
+	err := repository.PreWarmStock(ctx, campaignID, totalCount)
 	assert.NoError(t, err)
 
 	key := repo.StockKey(campaignID)
@@ -31,7 +31,7 @@ func TestPrewarmStock_Success(t *testing.T) {
 	assert.Equal(t, totalCount, valInt)
 }
 
-func TestIsStockPrewarmed_Success(t *testing.T) {
+func TestIsStockPreWarmed_Success(t *testing.T) {
 	ctx := context.Background()
 	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
 	defer mr.Close()
@@ -40,10 +40,10 @@ func TestIsStockPrewarmed_Success(t *testing.T) {
 	campaignID := "test-campaign-id"
 	totalCount := 100
 
-	err := repository.PrewarmStock(ctx, campaignID, totalCount)
+	err := repository.PreWarmStock(ctx, campaignID, totalCount)
 	assert.NoError(t, err)
 
-	isPrewarm, err := repository.IsStockPrewarm(ctx, campaignID)
+	isPreWarm, err := repository.IsStockPreWarm(ctx, campaignID)
 	assert.NoError(t, err)
-	assert.True(t, isPrewarm)
+	assert.True(t, isPreWarm)
 }
