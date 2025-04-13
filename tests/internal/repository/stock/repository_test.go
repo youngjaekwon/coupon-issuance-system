@@ -2,6 +2,7 @@ package stock
 
 import (
 	"context"
+	"couponIssuanceSystem/internal/apperrors"
 	repo "couponIssuanceSystem/internal/repository/stock"
 	test_redis "couponIssuanceSystem/tests/infra/redis"
 	"github.com/stretchr/testify/assert"
@@ -60,11 +61,11 @@ func TestDecrementStock_Success(t *testing.T) {
 
 	count, err := repository.DecrementStock(ctx, campaignID)
 	assert.NoError(t, err)
-	assert.Equal(t, int64(4), count)
+	assert.Equal(t, 4, count)
 
 	count, err = repository.DecrementStock(ctx, campaignID)
 	assert.NoError(t, err)
-	assert.Equal(t, int64(3), count)
+	assert.Equal(t, 3, count)
 }
 
 func TestDecrementStock_NegativeCount(t *testing.T) {
@@ -79,7 +80,7 @@ func TestDecrementStock_NegativeCount(t *testing.T) {
 
 	count, err := repository.DecrementStock(ctx, campaignID)
 	assert.NoError(t, err)
-	assert.Equal(t, int64(-1), count)
+	assert.Equal(t, -1, count)
 }
 
 func TestDecrementStock_StockNotPreWarmed(t *testing.T) {
@@ -92,7 +93,7 @@ func TestDecrementStock_StockNotPreWarmed(t *testing.T) {
 
 	count, err := repository.DecrementStock(ctx, campaignID)
 	assert.NoError(t, err)
-	assert.Equal(t, int64(-1), count)
+	assert.Equal(t, -1, count)
 }
 
 func TestIncrementStock_Success(t *testing.T) {
@@ -139,4 +140,33 @@ func TestIncrementStock_StockNotPreWarmed(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 1, valInt)
+}
+
+func TestRetrieveStock_Success(t *testing.T) {
+	ctx := context.Background()
+	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
+	defer mr.Close()
+	repository := repo.New(redisClient)
+
+	campaignID := "retrieve-test"
+	totalCount := 10
+	err := repository.PreWarmStock(ctx, campaignID, totalCount)
+	assert.NoError(t, err)
+
+	count, err := repository.RetrieveStock(ctx, campaignID)
+	assert.NoError(t, err)
+	assert.Equal(t, totalCount, count)
+}
+
+func TestRetrieveStock_StockNotPreWarmed(t *testing.T) {
+	ctx := context.Background()
+	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
+	defer mr.Close()
+	repository := repo.New(redisClient)
+
+	campaignID := "retrieve-test-not-prewarmed"
+
+	count, err := repository.RetrieveStock(ctx, campaignID)
+	assert.ErrorIs(t, err, apperrors.ErrStockNotPreWarmed)
+	assert.Equal(t, 0, count)
 }
