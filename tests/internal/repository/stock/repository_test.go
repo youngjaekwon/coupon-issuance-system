@@ -50,9 +50,9 @@ func TestIsStockPreWarmed_Success(t *testing.T) {
 
 func TestDecrementStock_Success(t *testing.T) {
 	ctx := context.Background()
-	rdb, mr := test_redis.SetupTestRedisClient(ctx)
+	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
 	defer mr.Close()
-	repository := repo.New(rdb)
+	repository := repo.New(redisClient)
 
 	campaignID := "decr-test"
 	err := repository.PreWarmStock(ctx, campaignID, 5)
@@ -69,9 +69,9 @@ func TestDecrementStock_Success(t *testing.T) {
 
 func TestDecrementStock_NegativeCount(t *testing.T) {
 	ctx := context.Background()
-	rdb, mr := test_redis.SetupTestRedisClient(ctx)
+	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
 	defer mr.Close()
-	repository := repo.New(rdb)
+	repository := repo.New(redisClient)
 
 	campaignID := "decr-test-negative"
 	err := repository.PreWarmStock(ctx, campaignID, 0)
@@ -84,13 +84,59 @@ func TestDecrementStock_NegativeCount(t *testing.T) {
 
 func TestDecrementStock_StockNotPreWarmed(t *testing.T) {
 	ctx := context.Background()
-	rdb, mr := test_redis.SetupTestRedisClient(ctx)
+	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
 	defer mr.Close()
-	repository := repo.New(rdb)
+	repository := repo.New(redisClient)
 
 	campaignID := "decr-test-not-prewarmed"
 
 	count, err := repository.DecrementStock(ctx, campaignID)
 	assert.NoError(t, err)
 	assert.Equal(t, int64(-1), count)
+}
+
+func TestIncrementStock_Success(t *testing.T) {
+	ctx := context.Background()
+	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
+	defer mr.Close()
+	repository := repo.New(redisClient)
+
+	campaignID := "incr-test"
+	totalCount := 5
+	err := repository.PreWarmStock(ctx, campaignID, totalCount)
+	assert.NoError(t, err)
+
+	err = repository.IncrementStock(ctx, campaignID)
+	assert.NoError(t, err)
+
+	key := repo.StockKey(campaignID)
+	valStr, err := redisClient.Get(ctx, key).Result()
+	assert.NoError(t, err)
+
+	valInt, err := strconv.Atoi(valStr)
+	assert.NoError(t, err)
+
+	expected := totalCount + 1
+	assert.Equal(t, expected, valInt)
+}
+
+func TestIncrementStock_StockNotPreWarmed(t *testing.T) {
+	ctx := context.Background()
+	redisClient, mr := test_redis.SetupTestRedisClient(ctx)
+	defer mr.Close()
+	repository := repo.New(redisClient)
+
+	campaignID := "incr-test-not-prewarmed"
+
+	err := repository.IncrementStock(ctx, campaignID)
+	assert.NoError(t, err)
+
+	key := repo.StockKey(campaignID)
+	valStr, err := redisClient.Get(ctx, key).Result()
+	assert.NoError(t, err)
+
+	valInt, err := strconv.Atoi(valStr)
+	assert.NoError(t, err)
+
+	assert.Equal(t, 1, valInt)
 }
