@@ -83,3 +83,36 @@ func TestCreateCoupon_DuplicateUserIDInCampaign(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "UNIQUE")
 }
+
+func TestExistsByUser_Success(t *testing.T) {
+	db := testdb.NewTestDB()
+	repository := repo.New(db)
+
+	testCampaignID := uuid.New()
+	testUserID := "testuser"
+
+	coupon := newTestCoupon(
+		"TESTCODE",
+		testCampaignID,
+		testUserID,
+	)
+
+	err := repository.Create(context.Background(), coupon)
+	assert.NoError(t, err)
+
+	exists, err := repository.ExistsByUser(context.Background(), testCampaignID, testUserID)
+	assert.NoError(t, err)
+	assert.True(t, exists)
+}
+
+func TestExistsByUser_NotFound(t *testing.T) {
+	db := testdb.NewTestDB()
+	repository := repo.New(db)
+
+	testCampaignID := uuid.New()
+	testUserID := "testuser"
+
+	exists, err := repository.ExistsByUser(context.Background(), testCampaignID, testUserID)
+	assert.NoError(t, err)
+	assert.False(t, exists)
+}
