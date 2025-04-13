@@ -28,7 +28,8 @@ func TestCreateCoupon_Success(t *testing.T) {
 		"testuser",
 	)
 
-	err := repository.Create(context.Background(), coupon)
+	result, err := repository.Create(context.Background(), coupon)
+	assert.True(t, result)
 	assert.NoError(t, err)
 
 	var found models.Coupon
@@ -47,15 +48,16 @@ func TestCreateCoupon_DuplicateCode(t *testing.T) {
 		"testuser",
 	)
 
-	err := repository.Create(context.Background(), coupon)
+	result, err := repository.Create(context.Background(), coupon)
+	assert.True(t, result)
 	assert.NoError(t, err)
 
 	duplicateCoupon := *coupon
 	duplicateCoupon.Code = coupon.Code
 
-	err = repository.Create(context.Background(), &duplicateCoupon)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "UNIQUE")
+	result, err = repository.Create(context.Background(), &duplicateCoupon)
+	assert.NoError(t, err)
+	assert.False(t, result)
 }
 
 func TestCreateCoupon_DuplicateUserIDInCampaign(t *testing.T) {
@@ -70,7 +72,8 @@ func TestCreateCoupon_DuplicateUserIDInCampaign(t *testing.T) {
 		"testuser",
 	)
 
-	err := repository.Create(context.Background(), coupon1)
+	result, err := repository.Create(context.Background(), coupon1)
+	assert.True(t, result)
 	assert.NoError(t, err)
 
 	coupon2 := newTestCoupon(
@@ -79,9 +82,9 @@ func TestCreateCoupon_DuplicateUserIDInCampaign(t *testing.T) {
 		"testuser",
 	)
 
-	err = repository.Create(context.Background(), coupon2)
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "UNIQUE")
+	result, err = repository.Create(context.Background(), coupon2)
+	assert.False(t, result)
+	assert.NoError(t, err)
 }
 
 func TestExistsByUser_Success(t *testing.T) {
@@ -97,7 +100,8 @@ func TestExistsByUser_Success(t *testing.T) {
 		testUserID,
 	)
 
-	err := repository.Create(context.Background(), coupon)
+	result, err := repository.Create(context.Background(), coupon)
+	assert.True(t, result)
 	assert.NoError(t, err)
 
 	exists, err := repository.ExistsByUser(context.Background(), testCampaignID, testUserID)
