@@ -39,3 +39,9 @@ func (r *repository) DecrementStock(ctx context.Context, campaignID string) (int
 	}
 	return val, nil
 }
+
+func (r *repository) IncrementStock(ctx context.Context, campaignID string) error {
+	key := StockKey(campaignID)
+	_, err := r.redisClient.Incr(ctx, key).Result()
+	return err
+}
