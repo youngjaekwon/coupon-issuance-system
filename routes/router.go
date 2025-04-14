@@ -1,18 +1,17 @@
 package routes
 
 import (
-	"couponIssuanceSystem/gen/health/v1/healthv1connect"
-	"couponIssuanceSystem/internal/handler"
+	"couponIssuanceSystem/internal/service/campaign"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRouter(
+	campaignService campaign.Service,
+) *gin.Engine {
 	r := gin.Default()
 
-	healthHandler := &handler.HealthServer{}
-	path, healthServiceHandler := healthv1connect.NewHealthServiceHandler(healthHandler)
-
-	r.Any(path+"*any", gin.WrapH(healthServiceHandler))
+	RegisterHealthRoutes(r)
+	RegisterCampaignRoutes(r, campaignService)
 
 	return r
 }
