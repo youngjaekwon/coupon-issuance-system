@@ -12,9 +12,9 @@ import (
 	couponsvc "couponIssuanceSystem/internal/service/coupon"
 	stocksvc "couponIssuanceSystem/internal/service/stock"
 	"couponIssuanceSystem/internal/utils/couponcode"
-
 	"couponIssuanceSystem/routes"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -35,9 +35,10 @@ func main() {
 
 	go stockWarmer.Run()
 
-	r := routes.SetupRouter(campaignService, couponService)
-
-	if err := r.Run(":" + config.AppConfig.Port); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	mux := routes.SetupMux(campaignService, couponService)
+	server := &http.Server{
+		Addr:    ":" + config.AppConfig.Port,
+		Handler: mux,
 	}
+	log.Fatal(server.ListenAndServe())
 }

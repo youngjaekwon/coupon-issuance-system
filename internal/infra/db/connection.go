@@ -3,6 +3,7 @@ package db
 import (
 	"couponIssuanceSystem/internal/config"
 	"couponIssuanceSystem/internal/models"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
@@ -19,7 +20,7 @@ func Init() *gorm.DB {
 	var err error
 	switch config.AppConfig.DBDriver {
 	case "postgres":
-		//db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	default:
 		db, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 	}

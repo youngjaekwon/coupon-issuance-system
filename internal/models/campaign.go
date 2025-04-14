@@ -6,7 +6,7 @@ import (
 )
 
 type Campaign struct {
-	ID         uuid.UUID  `gorm:"primaryKey"`
+	ID         uuid.UUID  `gorm:"type:uuid;primaryKey"`
 	Name       string     `gorm:"not null"`
 	TotalCount int        `gorm:"not null"`
 	StartAt    time.Time  `gorm:"not null"`

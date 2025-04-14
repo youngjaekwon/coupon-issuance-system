@@ -11,4 +11,8 @@ func RegisterHealthRoutes(r *gin.Engine) {
 	path, healthServiceHandler := healthv1connect.NewHealthServiceHandler(healthHandler)
 
 	r.Any(path+"*any", gin.WrapH(healthServiceHandler))
+
+	r.GET("/healthz", func(c *gin.Context) {
+		c.String(200, "ok")
+	})
 }
