@@ -22,7 +22,7 @@ func (r *repository) Create(ctx context.Context, campaign *models.Campaign) erro
 
 func (r *repository) FindByID(ctx context.Context, id uuid.UUID) (*models.Campaign, error) {
 	var campaign models.Campaign
-	err := r.db.WithContext(ctx).Where("id = ?", id).First(&campaign).Error
+	err := r.db.WithContext(ctx).Preload("Coupons").Where("id = ?", id).First(&campaign).Error
 	if err != nil {
 		return nil, err
 	}

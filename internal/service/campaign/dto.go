@@ -27,12 +27,20 @@ func (c *CreateCampaignInput) IsValid() bool {
 	return true
 }
 
+type CouponOutput struct {
+	Code     string    `json:"code"`
+	UserID   string    `json:"user_id"`
+	IssuedAt time.Time `json:"issued_at"`
+}
+
 type CampaignOutput struct {
-	ID         string     `json:"id"`
-	Name       string     `json:"name"`
-	TotalCount int        `json:"total_count"`
-	StartAt    time.Time  `json:"start_at"`
-	EndAt      *time.Time `json:"end_at,omitempty"`
-	CreatedAt  time.Time  `json:"created_at"`
-	UpdatedAt  time.Time  `json:"updated_at"`
+	ID         string          `json:"id"`
+	Name       string          `json:"name"`
+	TotalCount int             `json:"total_count"`
+	Stock      int             `json:"stock"`
+	StartAt    time.Time       `json:"start_at"`
+	EndAt      *time.Time      `json:"end_at,omitempty"`
+	CreatedAt  time.Time       `json:"created_at"`
+	UpdatedAt  time.Time       `json:"updated_at"`
+	Coupons    []*CouponOutput `json:"coupons,omitempty"`
 }

@@ -13,4 +13,5 @@ type Campaign struct {
 	EndAt      *time.Time // optional
 	CreatedAt  time.Time  `gorm:"autoCreateTime"`
 	UpdatedAt  time.Time  `gorm:"autoUpdateTime"`
+	Coupons    []Coupon   `gorm:"foreignKey:CampaignID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
