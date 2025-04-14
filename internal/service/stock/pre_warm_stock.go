@@ -2,23 +2,27 @@ package stock
 
 import (
 	"context"
-	"github.com/google/uuid"
+	"time"
 )
 
-func (s *service) PreWarmStock(ctx context.Context, campaignID uuid.UUID, totalCount int) error {
-	campaignIDStr := campaignID.String()
-	isPreWarm, err := s.repository.IsStockPreWarm(ctx, campaignIDStr)
+func (s *service) PreWarmStock(ctx context.Context, start, end time.Time) error {
+	campaigns, err := s.campaignRepository.FindStartingBetween(ctx, start, end)
 	if err != nil {
 		return err
 	}
 
-	if isPreWarm {
-		return nil
-	}
-
-	err = s.repository.PreWarmStock(ctx, campaignIDStr, totalCount)
-	if err != nil {
-		return err
+	for _, campaign := range campaigns {
+		isPreWarmed, err := s.repository.IsStockPreWarm(ctx, campaign.ID.String())
+		if err != nil {
+			return err
+		}
+		if isPreWarmed {
+			continue
+		}
+		err = s.repository.PreWarmStock(ctx, campaign.ID.String(), campaign.TotalCount)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

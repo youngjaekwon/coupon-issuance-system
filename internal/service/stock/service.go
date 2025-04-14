@@ -2,20 +2,23 @@ package stock
 
 import (
 	"context"
+	campaignrepo "couponIssuanceSystem/internal/repository/campaign"
 	repo "couponIssuanceSystem/internal/repository/stock"
-	"github.com/google/uuid"
+	"time"
 )
 
 type Service interface {
-	PreWarmStock(ctx context.Context, campaignID uuid.UUID, totalCount int) error
+	PreWarmStock(ctx context.Context, start, end time.Time) error
 }
 
 type service struct {
-	repository repo.Repository
+	repository         repo.Repository
+	campaignRepository campaignrepo.Repository
 }
 
-func New(repository repo.Repository) Service {
+func New(repository repo.Repository, campaignRepository campaignrepo.Repository) Service {
 	return &service{
-		repository: repository,
+		repository:         repository,
+		campaignRepository: campaignRepository,
 	}
 }

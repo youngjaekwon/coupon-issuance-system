@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"time"
 )
 
 type repository struct {
@@ -41,6 +42,15 @@ func (r *repository) List(ctx context.Context, page, limit int) ([]*models.Campa
 	} else {
 		err = r.db.WithContext(ctx).Offset(page * limit).Limit(limit).Find(&campaigns).Error
 	}
+	if err != nil {
+		return nil, err
+	}
+	return campaigns, nil
+}
+
+func (r *repository) FindStartingBetween(ctx context.Context, start, end time.Time) ([]*models.Campaign, error) {
+	var campaigns []*models.Campaign
+	err := r.db.WithContext(ctx).Where("start_time BETWEEN ? AND ?", start, end).Find(&campaigns).Error
 	if err != nil {
 		return nil, err
 	}
