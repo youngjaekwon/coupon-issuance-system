@@ -9,9 +9,7 @@ import (
 	"time"
 )
 
-var DB *gorm.DB
-
-func Init() {
+func Init() *gorm.DB {
 	dsn := config.AppConfig.DatabaseURL
 	if dsn == "" {
 		log.Fatal("DATABASE_URL is not set")
@@ -38,8 +36,9 @@ func Init() {
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	DB = db
 	autoMigrate(db)
+
+	return db
 }
 
 func autoMigrate(db *gorm.DB) {
